@@ -16,9 +16,18 @@
 
     <div class="container text-center quizText">
         <h1 class="header text-center">Coding Quiz</h1>
-        <p>Welcome to the coding fundamentals quiz! You will have 75 seconds to answer all questions. Be careful, incorrect answers will subtract 5 seconds from your time! To start the quiz, please click the "Start Quiz" button below.</p>
-        <button class = "btn btn-primary" aria-label="start" id = "start">Start Quiz</button>
+        <p>Welcome to the Coding Fundamentals quiz! You will have 75 seconds to answer all questions. The faster you
+            complete the quiz, the more points you will receive. Be careful, incorrect answers will subtract 5 seconds
+            from your time! To start the quiz, please click the "Start Quiz" button below.</p>
+        <button class="btn btn-primary" aria-label="start" id="start">Start Quiz</button>
     </div>
+    <div class="container text-center formContainer">
+        <form class="d-none" id="initialForm" method="POST">
+            <label for="initials"></label>
+            <input type="text" name="initials" id="initials" />
+        </form>
+    </div>
+    <h4 class="text-center questionResult"></h4>
     <script src="script.js"></script>
 </body>
 

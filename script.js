@@ -2,31 +2,37 @@
 var timer = document.querySelector("#quizTime");
 var startBtn = document.querySelector("#start");
 var quizText = document.querySelector(".quizText");
+var questResult = document.querySelector(".questionResult");
+var initForm = document.querySelector("#initialForm");
+var initials = document.querySelector("#initials");
+var formContainer = document.querySelector(".formContainer");
 var quizCountdown = 75;
 var questNo = 0;
 var playerScore = 0;
-var currentBest = localStorage.getItem("highestScore");
-var scores = localStorage.getItem("scores");
 var currQ;
 var questHeader;
 var questText;
 var questAnswers;
+var questResultDisplayed = false;
+var quizInterval;
+var scores;
+var currentBest;
 
 //Object to hold quiz question data
 var questions = [
     {
         text: "What does HTML stand for?",
-        answers: ["Hero Time My Lord","Hunger Text Makeup Language","Hyper Text Markup Language","Hyper Text Mixup Language"],
+        answers: ["Hero Time My Lord", "Hunger Text Makeup Language", "Hyper Text Markup Language", "Hyper Text Mixup Language"],
         correct: 2
     },
     {
-        text: "",
-        answers: ["","","",""],
+        text: "Which of the following is a self closing HTML tag?",
+        answers: ["img", "button", "div", "body"],
         correct: 0
     },
     {
-        text: "",
-        answers: ["","","",""],
+        text: "Which of the following is referred to as 'Strict Equality' in JavaScript?",
+        answers: ["=", "==", "+=", "==="],
         correct: 3
     },
 
@@ -37,13 +43,18 @@ function startQuiz() {
     //Clear out the quiz introduction text
     quizText.textContent = "";
     //Create a timer for the quiz
-    var quizInterval = setInterval(function () {
-       //Display the current time left for the quiz 
+    quizInterval = setInterval(function () {
+        //Display the current time left for the quiz 
         timer.textContent = "Timer: " + quizCountdown;
-        if(quizCountdown <= 0){
-            clearInterval(quizInterval);
-            //User ran out of time, so display lose screen
-            noMoreTime();
+        //If the previous question's result is still being displayed, clear it.
+        if (questResultDisplayed) {
+            questResult.textContent = "";
+        }
+        //If User ran out of time, display end screen and clear counter.
+        if (quizCountdown <= 0) {
+            
+
+            endQuiz();
         }
         quizCountdown--;
 
@@ -55,7 +66,10 @@ function startQuiz() {
 }
 
 //Function to display the questions
-function showQuestions(){
+function showQuestions() {
+    //Clear last question
+    quizText.textContent = "";
+
     //Grab the question data for the current question
     currQ = questions[questNo];
 
@@ -67,20 +81,149 @@ function showQuestions(){
     questText = document.createElement("h4");
     questText.textContent = currQ.text;
 
+    //Set up a container for the question answers
+    questAnswers = document.createElement("ul");
+    questAnswers.setAttribute("class", "list-group text-align-right");
+
+    //Create elements for the answers, plus buttons to select them with.
+    for (let i = 0; i < currQ.answers.length; i++) {
+        answerText = currQ.answers[i];
+        let li = document.createElement("li");
+        li.textContent = answerText;
+        li.setAttribute("data-index", i);
+        li.setAttribute("class", "list-group-item list-group-item-info")
+
+        let button = document.createElement("button");
+        button.textContent = "Select";
+        button.setAttribute("class", "btn-primary float-left")
+        button.addEventListener("click", checkAnswer);
+
+        li.appendChild(button);
+        questAnswers.appendChild(li);
+    }
+
     //Add the new elements to the page
     quizText.appendChild(questHeader);
     quizText.appendChild(questText);
+    quizText.appendChild(questAnswers);
 }
 
 //Function to validate the user's answer to a question
-function checkAnswer(){
+function checkAnswer(event) {
+    var answerNo = event.target.parentElement.getAttribute("data-index");
+    console.log(questions[questNo]);
+    correctNo = questions[questNo].correct;
+
+    //If they got the question correct, inform the player and increase their score
+    if (answerNo == correctNo) {
+        playerScore++;
+        questResultDisplayed = true;
+        questResult.textContent = "Correct!"
+    }
+    //Otherwise, subtract time from the timer
+    else {
+        quizCountdown -= 5;
+        questResult = "Incorrect"
+        questResultDisplayed = true;
+        //If that would push the counter negative, clear the interval and display the end screen
+        if (quizCountdown <= 0) {
+            quizCountdown = 0;
+            timer.textContent = "Timer: " + quizCountdown;
+            endQuiz();
+        }
+    }
+
+    //Increase the question number and display next question.
+    console.log(questNo);
+    console.log(questions.length);
+
+    questNo++;
+    if (questNo < questions.length) {
+        console.log("got here " + questNo);
+        showQuestions();
+    }
+    //Otherwise, show end screen of quiz.
+    else {
+        timer.textContent = "";
+        endQuiz();
+    }
 
 }
 
-//Function to display a loss screen if user runs out of time
-function noMoreTime(){
+//Function to display the ending screen, and log any high scores
+function endQuiz() {
+    //Clear the screen
+    quizText.textContent = "";
+    clearInterval(quizInterval);
+    timer.textContent = "";
+    questResult.textContent = "";
+
+    //Check the past high scores. If they're empty, set them.
+    currentBest = localStorage.getItem("highestScore");
+    scores = localStorage.getItem("scores");
+    if (scores == null || currentBest == null) {
+        localStorage.setItem("highestScore", 0);
+        localStorage.setItem("scores", "");
+        scores = "";
+        currentBest = 0;
+    }
+
+    //If the player ran out of time, display that
+    if (quizCountdown == 0) {
+        let p = document.createElement("p");
+        p.textContent = "You ran out of time!!"
+        quizText.appendChild(p);
+    }
+
+    //Otherwise, display the ending screen with the player's score
+    playerScore += quizCountdown;
+    var h3 = document.createElement("h3");
+    h3.textContent = "Your score was " + playerScore;
+    quizText.appendChild(h3);
+
+    //If the player got a new highscore, save it and inform the player.
+    if (playerScore > currentBest) {
+        newHighScore();
+    }
+    
+    //Display button to take quiz again
+    var a = document.createElement("a");
+    a.setAttribute("href", "index.html")
+    var button = document.createElement("button")
+    button.textContent = "Retake Quiz";
+    button.setAttribute("class", "btn-primary")
+    a.appendChild(button);
+    formContainer.appendChild(a);
+}
+
+//Function to store a new high score
+function newHighScore(){
+    //Display text to inform user that they beat previous high score
+    let h4 = document.createElement("h4");
+    h4.textContent = "You beat the previous high score!";
+
+    //Save highest score to date
+    localStorage.setItem("highestScore", playerScore);
+
+    let p = document.createElement("p");
+    p.textContent = "Please enter your initials below to save your score!";
+    initForm.setAttribute("class", "text-center d-block");
+
+    quizText.appendChild(h4);
+    quizText.appendChild(p);
 
 }
 
 //Create an event listener to start the quiz when the user clicks the button
 startBtn.addEventListener("click", startQuiz);
+initForm.addEventListener("submit", function(event){
+    event.preventDefault();
+    var inits = initials.value.trim();
+    console.log(inits);
+    scores += " " + inits + "-" + playerScore;
+    let p = document.createElement("p");
+    p.textContent = "Thank you for submitting your high score, " + inits;
+    localStorage.setItem("scores", scores);
+    formContainer.appendChild(p);
+    initials.setAttribute("class", "d-none");
+});
