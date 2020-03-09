@@ -31,11 +31,25 @@ var questions = [
         correct: 0
     },
     {
+        text: "What are the different types of CSS Positioning?",
+        answers: ["Strict, Abstract", "Static, Relative, Absolute, Fixed", "Left, Right, Center", "Float, Sticky, Clear"],
+        correct: 1
+    },
+    {
         text: "Which of the following is referred to as 'Strict Equality' in JavaScript?",
         answers: ["=", "==", "+=", "==="],
         correct: 3
     },
-
+    {
+        text: "Bootstrap is known as a CDN. What does CDN stand for?",
+        answers: ["Connected Database Network", "Content Delivery Network", "Cloud Database Nexus", "Clone Database Nodes"],
+        correct: 1
+    },
+    {
+        text: "Which of the following is not a common data type for a variable in Javascript?",
+        answers: ["number", "boolean", "function", "string"],
+        correct: 2
+    }
 ];
 
 //Function to start the quiz
@@ -52,8 +66,6 @@ function startQuiz() {
         }
         //If User ran out of time, display end screen and clear counter.
         if (quizCountdown <= 0) {
-            
-
             endQuiz();
         }
         quizCountdown--;
@@ -69,6 +81,9 @@ function startQuiz() {
 function showQuestions() {
     //Clear last question
     quizText.textContent = "";
+    if(quizCountdown <= 0){
+        return;
+    }
 
     //Grab the question data for the current question
     currQ = questions[questNo];
@@ -116,7 +131,7 @@ function checkAnswer(event) {
 
     //If they got the question correct, inform the player and increase their score
     if (answerNo == correctNo) {
-        playerScore++;
+        playerScore += 5;
         questResultDisplayed = true;
         questResult.textContent = "Correct!"
     }
@@ -129,15 +144,14 @@ function checkAnswer(event) {
         if (quizCountdown <= 0) {
             quizCountdown = 0;
             timer.textContent = "Timer: " + quizCountdown;
+            quizText.textContent = "";
             endQuiz();
+            return;
         }
     }
 
     //Increase the question number and display next question.
-    console.log(questNo);
-    console.log(questions.length);
-
-    questNo++;
+     questNo++;
     if (questNo < questions.length) {
         console.log("got here " + questNo);
         showQuestions();
@@ -169,7 +183,7 @@ function endQuiz() {
     }
 
     //If the player ran out of time, display that
-    if (quizCountdown == 0) {
+    if (quizCountdown <= 0) {
         let p = document.createElement("p");
         p.textContent = "You ran out of time!!"
         quizText.appendChild(p);
@@ -220,7 +234,7 @@ initForm.addEventListener("submit", function(event){
     event.preventDefault();
     var inits = initials.value.trim();
     console.log(inits);
-    scores += " " + inits + "-" + playerScore;
+    scores += inits + "-" + playerScore + ",";
     let p = document.createElement("p");
     p.textContent = "Thank you for submitting your high score, " + inits;
     localStorage.setItem("scores", scores);
