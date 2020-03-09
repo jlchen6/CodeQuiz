@@ -3,8 +3,10 @@ var timer = document.querySelector("#quizTime");
 var startBtn = document.querySelector("#start");
 var quizText = document.querySelector(".quizText");
 var questResult = document.querySelector(".questionResult");
-var initForm = document.querySelector("#initialForm");
 var initials = document.querySelector("#initials");
+var initRow = document.querySelector("#initialRow");
+var initButton = document.querySelector("#submitInitials");
+var displaySubmitted = document.querySelector("#displaySubmitted");
 var formContainer = document.querySelector(".formContainer");
 var quizCountdown = 75;
 var questNo = 0;
@@ -222,8 +224,7 @@ function newHighScore(){
 
     let p = document.createElement("p");
     p.textContent = "Please enter your initials below to save your score!";
-    initForm.setAttribute("class", "text-center d-block");
-
+    initRow.setAttribute("class", "text-center d-block");
     quizText.appendChild(h4);
     quizText.appendChild(p);
 
@@ -231,14 +232,13 @@ function newHighScore(){
 
 //Create an event listener to start the quiz when the user clicks the button
 startBtn.addEventListener("click", startQuiz);
-initForm.addEventListener("submit", function(event){
+initButton.addEventListener("click", function(event){
     event.preventDefault();
     var inits = initials.value.trim();
     console.log(inits);
     scores += inits + "-" + playerScore + ",";
-    let p = document.createElement("p");
-    p.textContent = "Thank you for submitting your high score, " + inits;
+    displaySubmitted = document.querySelector("#displaySubmitted");
+    displaySubmitted.textContent = "Thank you for submitting your high score, " + inits;
     localStorage.setItem("scores", scores);
-    formContainer.appendChild(p);
-    initials.setAttribute("class", "d-none");
+    initRow.setAttribute("class", "row d-none");
 });

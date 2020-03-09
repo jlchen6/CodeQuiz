@@ -22,11 +22,13 @@
         <button class="btn btn-primary" aria-label="start" id="start">Start Quiz</button>
     </div>
     <div class="container text-center formContainer">
-        <form class="d-none" id="initialForm" method="POST">
-            <label for="initials"></label>
-            <input type="text" name="initials" id="initials" />
-        </form>
+        <div class = "row d-none" id = "initialRow">
+            <input type="text" id = "initials" placeholder="Enter Initials Here">
+            <button id = "submitInitials">Submit</button>
+        </div>
+        <p id = "displaySubmitted"></p>
     </div>
+
     <h4 class="text-center questionResult"></h4>
     <script src="script.js"></script>
 </body>
