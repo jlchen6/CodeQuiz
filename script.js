@@ -63,6 +63,7 @@ function startQuiz() {
         //If the previous question's result is still being displayed, clear it.
         if (questResultDisplayed) {
             questResult.textContent = "";
+            questResultDisplayed = false;
         }
         //If User ran out of time, display end screen and clear counter.
         if (quizCountdown <= 0) {
@@ -132,13 +133,13 @@ function checkAnswer(event) {
     //If they got the question correct, inform the player and increase their score
     if (answerNo == correctNo) {
         playerScore += 5;
-        questResultDisplayed = true;
         questResult.textContent = "Correct!"
+        questResultDisplayed = true;
     }
     //Otherwise, subtract time from the timer
     else {
         quizCountdown -= 5;
-        questResult = "Incorrect"
+        questResult.textContent = "Incorrect"
         questResultDisplayed = true;
         //If that would push the counter negative, clear the interval and display the end screen
         if (quizCountdown <= 0) {
