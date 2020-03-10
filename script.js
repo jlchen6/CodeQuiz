@@ -29,7 +29,7 @@ var questions = [
     },
     {
         text: "Which of the following is a self closing HTML tag?",
-        answers: ["img", "button", "div", "body"],
+        answers: ["img", "button", "div", "body", "The above are all self-closing tags"],
         correct: 0
     },
     {
@@ -51,6 +51,11 @@ var questions = [
         text: "Which of the following is not a common data type for a variable in Javascript?",
         answers: ["number", "boolean", "function", "string"],
         correct: 2
+    },
+    {
+        text: "What does DOM stand for?",
+        answers: ["Document Object Model", "Database Oriented Macro", "Directed Office Machine", "Double Or Monday", "None of the above"],
+        correct: 0
     }
 ];
 
@@ -84,7 +89,7 @@ function startQuiz() {
 function showQuestions() {
     //Clear last question
     quizText.textContent = "";
-    if(quizCountdown <= 0){
+    if (quizCountdown <= 0) {
         return;
     }
 
@@ -128,8 +133,8 @@ function showQuestions() {
 
 //Function to validate the user's answer to a question
 function checkAnswer(event) {
+    //Get the answer number of the button that was clicked on, as well as what the correct answer number should be.
     var answerNo = event.target.parentElement.getAttribute("data-index");
-    console.log(questions[questNo]);
     correctNo = questions[questNo].correct;
 
     //If they got the question correct, inform the player and increase their score
@@ -154,7 +159,7 @@ function checkAnswer(event) {
     }
 
     //Increase the question number and display next question.
-     questNo++;
+    questNo++;
     if (questNo < questions.length) {
         console.log("got here " + questNo);
         showQuestions();
@@ -202,29 +207,32 @@ function endQuiz() {
     if (playerScore > currentBest) {
         newHighScore();
     }
-    
-    //Display button to take quiz again
+
+    //Create a link to the main page
     var a = document.createElement("a");
-    a.setAttribute("href", "index.html")
-    var button = document.createElement("button")
+    a.setAttribute("href", "index.html");
+    //Create a button to retake the quiz
+    var button = document.createElement("button");
     button.textContent = "Retake Quiz";
-    button.setAttribute("class", "btn-primary")
+    button.setAttribute("class", "btn-primary");
+    //Add the button to the link, so that clicking the button follows the link and refreshes the page.
     a.appendChild(button);
+    //Add the link to the form
     formContainer.appendChild(a);
 }
 
 //Function to store a new high score
-function newHighScore(){
+function newHighScore() {
     //Display text to inform user that they beat previous high score
     let h4 = document.createElement("h4");
     h4.textContent = "You beat the previous high score!";
 
-    //Save highest score to date
-    localStorage.setItem("highestScore", playerScore);
-
+    //Display the input box and button for the user to submit their initials to save their score
     let p = document.createElement("p");
     p.textContent = "Please enter your initials below to save your score!";
     initRow.setAttribute("class", "text-center d-block");
+
+    //Add those display elements to the div
     quizText.appendChild(h4);
     quizText.appendChild(p);
 
@@ -232,13 +240,27 @@ function newHighScore(){
 
 //Create an event listener to start the quiz when the user clicks the button
 startBtn.addEventListener("click", startQuiz);
-initButton.addEventListener("click", function(event){
+initButton.addEventListener("click", function (event) {
+    //Prevent the button from refreshing the page
     event.preventDefault();
+
+    //Store the usere's entered text
     var inits = initials.value.trim();
     console.log(inits);
+
+    //Concatenate the player's initials and score to the locally stored scores, separated by a comma
     scores += inits + "-" + playerScore + ",";
+
+    //Display to the user that they have submitted their score
     displaySubmitted = document.querySelector("#displaySubmitted");
     displaySubmitted.textContent = "Thank you for submitting your high score, " + inits;
+
+    //Save the updated scores to local storage
     localStorage.setItem("scores", scores);
+
+    //Update highest score to date
+    localStorage.setItem("highestScore", playerScore);
+
+    //Set the display of the form to "none" so that the user can't submit their initials multiple times for the same score
     initRow.setAttribute("class", "row d-none");
 });
